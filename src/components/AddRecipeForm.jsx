@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
 import imageCompression from "browser-image-compression";
+import { useEffect, useState } from "react";
 
 export default function AddRecipeForm() {
   const [dishName, setDishName] = useState("");
@@ -13,6 +13,12 @@ export default function AddRecipeForm() {
   const [link, setLink] = useState("");
 
   const apiUrl = "https://6880ec34f1dcae717b63fc74.mockapi.io/MyRecipies";
+
+  const CLOUD_NAME =
+    process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "your_cloud_name";
+  const UPLOAD_PRESET =
+    process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "your_preset_name";
+
   const fetchRecipes = async () => {
     try {
       const res = await axios.get(apiUrl);
@@ -25,7 +31,7 @@ export default function AddRecipeForm() {
     fetchRecipes();
   }, []);
 
-  const handleImageChange = async(e) => {
+  const handleImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const options = {
@@ -68,7 +74,7 @@ export default function AddRecipeForm() {
       setTags([]);
       setImage("");
       setLink("");
-      
+
       alert("Recipe added successfully!");
     } catch (err) {
       console.error(err);
@@ -110,9 +116,9 @@ export default function AddRecipeForm() {
           required
           className="form-control mb-2"
         />
-        <label  className="form-label">Select tag for your Recepie</label>
+        <label className="form-label">Select tag for your Recepie</label>
         <select
-        id="selecttag"
+          id="selecttag"
           multiple
           value={tags}
           onChange={handleTagChange}
@@ -122,26 +128,29 @@ export default function AddRecipeForm() {
           <option>Beverages</option>
           <option>Snacks</option>
           <option>Heallthy</option>
-          
         </select>
         <input
           type="file"
           className="form-control mb-2"
           onChange={handleImageChange}
         />
-        
+
         <input
-    type="url"
-    className="form-control"
-    id="recipeLink"
-    placeholder="Enter recipe URL"
-    value={link}
-    onChange={(e) => setLink(e.target.value )}
-  />
+          type="url"
+          className="form-control"
+          id="recipeLink"
+          placeholder="Enter recipe URL"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+        />
         <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-primary w-full bg- border-0 rounded-5 fw-semibold fs-5 h-auto " type="submit">
-          Submit Recipe
-        </button></div>
+          <button
+            className="btn btn-primary w-full bg- border-0 rounded-5 fw-semibold fs-5 h-auto "
+            type="submit"
+          >
+            Submit Recipe
+          </button>
+        </div>
       </form>
     </div>
   );
