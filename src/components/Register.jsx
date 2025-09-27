@@ -15,11 +15,24 @@ const Register= () => {
   const validate = () => {
     let temp = {};
     let isValid = true;
-    if (!formData.fullname) { temp.fullname = "Full name required"; isValid = false; }
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) { temp.email = "Valid email required"; isValid = false; }
-    if (!formData.password || formData.password.length < 6) { temp.password = "Password min 6 chars"; isValid = false; }
-    if (formData.password !== formData.confirmPassword) { temp.confirmPassword = "Passwords do not match"; isValid = false; }
-    setErrors(temp); return isValid;
+    if (!formData.fullname) {
+      temp.fullname = "Full name required";
+      isValid = false;
+    }
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+      temp.email = "Valid email required";
+      isValid = false;
+    }
+    if (!formData.password || formData.password.length < 6) {
+      temp.password = "Password min 6 characters";
+      isValid = false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      temp.confirmPassword = "Passwords do not match";
+      isValid = false;
+    }
+    setErrors(temp);
+    return isValid;
   };
 
   const handleSubmit = (e) => {
