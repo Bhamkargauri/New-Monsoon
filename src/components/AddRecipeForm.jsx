@@ -14,11 +14,6 @@ export default function AddRecipeForm() {
 
   const apiUrl = "https://6880ec34f1dcae717b63fc74.mockapi.io/MyRecipies";
 
-  const CLOUD_NAME =
-    process.env.REACT_APP_CLOUDINARY_CLOUD_NAME || "your_cloud_name";
-  const UPLOAD_PRESET =
-    process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET || "your_preset_name";
-
   const fetchRecipes = async () => {
     try {
       const res = await axios.get(apiUrl);

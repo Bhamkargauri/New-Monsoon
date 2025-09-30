@@ -1,36 +1,22 @@
-
 import { useEffect, useState } from "react";
+import recipesData from "../api/api.json";
+import "../App.css";
 import Banner1 from "../assets/Banner.png";
 import Chai from "../assets/Chai.jpg";
 import Banner3 from "../assets/VadaPav.png";
-import recipesData from "../api/api.json";
-import "../App.css"; 
+import Modal from "./Modal";
 
 const RecipeCard = () => {
   const [recipes, setRecipes] = useState([]);
   const [displayedRecipes, setDisplayedRecipes] = useState([]);
-  const [likes, setLikes] = useState({});
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [savedRecipes, setSavedRecipes] = useState([]); // added
-
 
   useEffect(() => {
     setRecipes(recipesData);
     setDisplayedRecipes(recipesData);
-    const likesInit = recipesData.reduce((acc, r) => {
-      acc[r.id] = false;
-      return acc;
-    }, {});
-    setLikes(likesInit);
-
-    const saved = JSON.parse(localStorage.getItem("savedRecipes")) || []; //added
-    setSavedRecipes(saved); // ✅ added
   }, []);
-
-
-  const toggleLike = (id) => {
-    setLikes((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,28 +26,32 @@ const RecipeCard = () => {
       return;
     }
 
-    const filtered = recipes.filter((r) =>
-      String(r.dishName || "")
-        .toLowerCase()
-        .includes(searchText.toLowerCase() ) ||
-        r.tags.some(tag => tag.toLowerCase().includes(searchText.toLowerCase()))
+    const filtered = recipes.filter(
+      (r) =>
+        String(r.dishName || "")
+          .toLowerCase()
+          .includes(searchText.toLowerCase()) ||
+        r.tags.some((tag) =>
+          tag.toLowerCase().includes(searchText.toLowerCase())
+        )
     );
     setDisplayedRecipes(filtered);
   };
-//  save recepie to local storage
-   const handleSave = (recipe) => {   //added
+  //  save recepie to local storage
+  const handleSave = (recipe) => {
+    //added
     const updated = [...savedRecipes, recipe]; //added
     setSavedRecipes(updated); // added
     localStorage.setItem("savedRecipes", JSON.stringify(updated)); //added
-    window.dispatchEvent(new Event("savedRecipesUpdated")); // added  
-  };  // added
+    window.dispatchEvent(new Event("savedRecipesUpdated")); // added
+  }; // added
 
-function shareToWhatsapp(dishName, link) {
-  const text = `${dishName} - Check out this recipe: ${link}`;
-  const encodedText = encodeURIComponent(text); // Encode text for URL
-  const url = `https://wa.me/?text=${encodedText}`;
-  window.open(url, "_blank"); // Opens in a new tab
-}
+  function shareToWhatsapp(dishName, link) {
+    const text = `${dishName} - Check out this recipe: ${link}`;
+    const encodedText = encodeURIComponent(text); // Encode text for URL
+    const url = `https://wa.me/?text=${encodedText}`;
+    window.open(url, "_blank"); // Opens in a new tab
+  }
 
   return (
     <div className="align-items-center justify-content-around d-flex flex-column">
@@ -174,17 +164,25 @@ function shareToWhatsapp(dishName, link) {
       </div>
 
       <form className="w-100 mt-5" onSubmit={handleSubmit}>
-        <div className="d-flex justify-content-between align-items-center w-100  mb-5 flex-wrap">
+        <div className="d-flex justify-content-between align-items-center w-100  mb-3 flex-wrap mx-5">
           <div>
-            <div className="d-flex align-items-center justify-content-between border" style={{width:"230px"}} >
-         <h5 className="mt-2" >Filter by Tag</h5>  
-          <select className="form-select border border-bg-warning fs-5 " style={{ maxWidth: "100px"}} value={searchText} onChange={(e) => setSearchText(e.target.value)}>
-               <option value="">All</option>
-              <option value="Beverage">Beverages</option>
-              <option value="Spicy">Spicy</option>
-              <option value="Snacks">Snacks</option>
-              <option value="Healthy">Healthy</option>
-            </select>
+            <div
+              className="d-flex align-items-center justify-content-between border"
+              style={{ width: "230px" }}
+            >
+              <h5 className="mt-2">Filter by Tag</h5>
+              <select
+                className="form-select border border-bg-warning fs-5 "
+                style={{ maxWidth: "100px" }}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              >
+                <option value="">All</option>
+                <option value="Beverage">Beverages</option>
+                <option value="Spicy">Spicy</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Healthy">Healthy</option>
+              </select>
             </div>
           </div>
 
@@ -198,65 +196,78 @@ function shareToWhatsapp(dishName, link) {
               placeholder="Search by dish name"
               className="form-control border border-warning rounded-5 text-center w-50"
               value={searchText}
-              onChange={(e) => setSearchText((e.target.value.toLowerCase()))}
+              onChange={(e) => setSearchText(e.target.value.toLowerCase())}
             />
-            <button type="submit" className="btn btn-primary bg-warning border-0 rounded-5 fs-4 fw-semibold " >
+            <button
+              type="submit"
+              className="btn btn-primary bg-warning border-0 rounded-5 fs-4 fw-semibold "
+            >
               Search
             </button>
           </div>
         </div>
       </form>
 
-      {/* Cards */} 
-      
-       <h2>Tasty MonSoon Recepies 😋</h2>
-      <div className="row row-cols-1 row-cols-md-3 g-4 mt-4 w-100 ">
-      
-        {displayedRecipes.map((recipe) => (
-          
-          <div className="col " key={recipe.id}>
-            <div className="card h-100 custom-card shadow-lg  border-2 border-warning"style={{borderRadius:"35px" , hover: {transform: "scale(1.05)" }
-            }} 
->
+      {/* Cards */}
 
+      <h2>Tasty MonSoon Recepies 😋</h2>
+      <div className="row row-cols-1 row-cols-md-4 g-4 mt-4 w-100 px-5 pb-5">
+        {displayedRecipes.map((recipe) => (
+          <div className="col " key={recipe.id}>
+            <div
+              className="card h-100 custom-card shadow-lg  border-2 border-warning"
+              style={{
+                borderRadius: "35px",
+                hover: { transform: "scale(1.05)" },
+              }}
+            >
               {recipe.image && (
                 <img
                   src={recipe.image}
-                  className="card-img-top rounded-top-5" 
+                  className="card-img-top rounded-top-5"
                   alt={recipe.dishName}
                   style={{ height: "200px", objectFit: "cover" }}
                 />
               )}
               <div>
-              <div className="card-body box" >
-                <h5 className="card-title fw-bold fs-2">{recipe.dishName}</h5>
-                <p className="card-text"><span className=" fw-semibold">Ingredients: </span>{recipe.Ingredients.join(" , ")}</p>
-                <p className="card-text "><span className="fw-semibold">Tags: </span>{recipe.tags.join(" , ")}</p>
-                <p className="card-text "><span className="fw-semibold">Description:</span>{recipe.description}</p>
-                 <p className="card-text "><span className="fw-semibold">Link:</span><a href={recipe.link} target="blank" style={{fontSize:"12px"}}> {recipe.link}</a></p>
-              </div>
-              </div>
-              <div className="d-flex mt-auto">
-              <button
-                className="btn  btn-sm  mx-3 mb-3 border-0"
-                onClick={() => toggleLike(recipe.id)}
-                type="button"
-              >
-                {likes[recipe.id] ? (
-                  <>
-                   <span className="fs-2">❤️</span>
-                  </>
-                ) : (
-                  <span className="fs-2">🤍</span>
-                )}
-              </button>
-              <button  className="btn border-0 btn-sm  mx-3 mb-3 fs-4"  onClick={() => handleSave(recipe)}>💾</button>
-              <button className="btn border-0 btn-sm  mx-3 mb-3 fs-4" onClick={() => shareToWhatsapp(recipe.dishName, recipe.link)} >➤</button>
+                <div className="card-body box">
+                  <h5 className="card-title fw-bold fs-5">{recipe.dishName}</h5>
+                  <p className="card-text" style={{ fontSize: "14px" }}>
+                    <span className="fw-semibold">Description:</span>
+                    {recipe.description}{" "}
+                    <a
+                      className="link-offset-1"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedRecipe(recipe);
+                      }}
+                    >
+                      View Recipe
+                    </a>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+      {selectedRecipe && (
+        <div className="modal fade show d-block" tabIndex="-1">
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content p-3">
+              <button
+                className="btn-close ms-auto"
+                onClick={() => setSelectedRecipe(null)} // ✅ close modal
+              ></button>
+              <Modal
+                recipe={selectedRecipe}
+                handleSave={handleSave}
+                shareToWhatsapp={shareToWhatsapp}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

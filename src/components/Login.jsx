@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import banner from "../assets/Banner.png";
-
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +34,7 @@ const Login = () => {
         backgroundPosition: "center",
         height: "100vh",
         width: "100vw",
-        overflow: "hidden",
+        overflow: "hidden"
       }}
     >
       <div
