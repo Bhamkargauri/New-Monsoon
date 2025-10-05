@@ -16,13 +16,13 @@ const MyRecipes = () => {
   };
 
   // Remove recipe from saved (localStorage)
-  const handleRemove = (id, dishName) => {
-    const updated = savedRecipes.filter(
-      (r) => r.id !== id && r.dishName !== dishName
-    );
-    setSavedRecipes(updated);
-    localStorage.setItem("savedRecipes", JSON.stringify(updated));
-    window.dispatchEvent(new Event("savedRecipesUpdated"));
+  const handleRemove = (id) => {
+    if (window.confirm("want to remove this recipe?")) {
+      const updated = savedRecipes.filter((r) => r.id !== id);
+      setSavedRecipes(updated);
+      localStorage.setItem("savedRecipes", JSON.stringify(updated));
+      window.dispatchEvent(new Event("savedRecipesUpdated"));
+    }
   };
 
   // Fetch uploaded recipes from API
@@ -38,9 +38,9 @@ const MyRecipes = () => {
 
   // Delete recipe from API
   const handleDeleteUploaded = async (id) => {
-    if (window.confirm("Delete this recipe?")) {
+    if (window.confirm("want to delete this recipe?")) {
       try {
-        await fetch($`{apiUrl}` / $`{id}`, { method: "DELETE" });
+        await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
         fetchUploadedRecipes(); // refresh after delete
       } catch (err) {
         console.error("Error deleting recipe:", err);
@@ -104,7 +104,8 @@ const MyRecipes = () => {
                   <button
                     className="btn btn-danger btn-sm px-2 py-1"
                     style={{ fontSize: "0.75rem" }}
-                    onClick={() => handleDeleteUploaded(recipe.id)}
+                    // onClick={() => handleDeleteUploaded(recipe.id)}
+                    onClick={() => handleRemove(recipe.id)}
                   >
                     Remove
                   </button>
@@ -175,7 +176,12 @@ const MyRecipes = () => {
       </div>
 
       {selectedRecipe && (
-        <div className="modal fade show d-block" tabIndex="-1">
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div
             className="modal-dialog"
             style={{
@@ -183,12 +189,20 @@ const MyRecipes = () => {
               width: "50%",
             }}
           >
-            <div className="modal-content p-3">
-              <button
-                className="btn-close ms-auto"
-                onClick={() => setSelectedRecipe(null)}
-              ></button>
-              <Modal recipe={selectedRecipe} />
+            <div className="modal-content rounded-4">
+              <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div className="modal-header bg-warning bg-opacity-75 text-dark border-0">
+                  <h5 className="modal-title fw-bold fs-4 mb-0">
+                    {selectedRecipe.dishName}
+                  </h5>
+                  <button
+                    className="btn-close ms-auto"
+                    aria-label="Close"
+                    onClick={() => setSelectedRecipe(null)}
+                  ></button>
+                </div>
+                <Modal recipe={selectedRecipe} />
+              </div>
             </div>
           </div>
         </div>

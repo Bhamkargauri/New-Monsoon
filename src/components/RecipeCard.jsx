@@ -76,15 +76,12 @@ const RecipeCard = () => {
     <div className="align-items-center justify-content-around d-flex flex-column">
       <Carousel />
       <form className="w-100 mt-5" onSubmit={handleSubmit}>
-        <div className="d-flex justify-content-between align-items-center w-100  mb-3 flex-wrap mx-5">
-          <div
-            className="d-flex align-items-center justify-content-between border"
-            style={{ width: "230px" }}
-          >
-            <h5 className="mt-2">Filter by Tag</h5>
+        <div className="d-flex justify-content-between align-items-center w-100 mb-3 flex-wrap mx-5">
+          <div className="d-flex align-items-center justify-content-between border">
+            <h5 className="mt-2 mx-3">Filter by Tag</h5>
             <select
-              className="form-select border border-bg-warning fs-5 "
-              style={{ width: "150px" }}
+              className="form-select border border-bg-warning fs-5"
+              style={{ width: "140px" }}
               value={searchText}
               onChange={(e) => handleDropdownChange(e.target.value)}
             >
@@ -169,8 +166,14 @@ const RecipeCard = () => {
           </div>
         ))}
       </div>
+
       {selectedRecipe && (
-        <div className="modal fade show d-block" tabIndex="-1">
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div
             className="modal-dialog"
             style={{
@@ -178,12 +181,20 @@ const RecipeCard = () => {
               width: "50%",
             }}
           >
-            <div className="modal-content p-3">
-              <button
-                className="btn-close ms-auto"
-                onClick={() => setSelectedRecipe(null)}
-              ></button>
-              <Modal recipe={selectedRecipe} likes={likes} />
+            <div className="modal-content rounded-4">
+              <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div className="modal-header bg-warning bg-opacity-75 text-dark border-0">
+                  <h5 className="modal-title fw-bold fs-4 mb-0">
+                    {selectedRecipe.dishName}
+                  </h5>
+                  <button
+                    className="btn-close ms-auto"
+                    aria-label="Close"
+                    onClick={() => setSelectedRecipe(null)}
+                  ></button>
+                </div>
+                <Modal recipe={selectedRecipe} likes={likes} />
+              </div>
             </div>
           </div>
         </div>
