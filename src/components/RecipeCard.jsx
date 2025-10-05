@@ -171,7 +171,13 @@ const RecipeCard = () => {
       </div>
       {selectedRecipe && (
         <div className="modal fade show d-block" tabIndex="-1">
-          <div className="modal-dialog modal-lg">
+          <div
+            className="modal-dialog"
+            style={{
+              maxWidth: "700px",
+              width: "50%",
+            }}
+          >
             <div className="modal-content p-3">
               <button
                 className="btn-close ms-auto"
