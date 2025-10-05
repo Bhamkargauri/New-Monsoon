@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import recipesData from "../api/api.json";
 import "../App.css";
-import Banner1 from "../assets/Banner.png";
-import Chai from "../assets/Chai.jpg";
-import Banner3 from "../assets/VadaPav.png";
+
+import Carousel from "./Carousel";
 import Modal from "./Modal";
 
 const RecipeCard = () => {
@@ -11,11 +10,20 @@ const RecipeCard = () => {
   const [displayedRecipes, setDisplayedRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [savedRecipes, setSavedRecipes] = useState([]); // added
+  const [searchInput, setSearchInput] = useState("");
+  const [likes, setLikes] = useState({});
+  const [savedRecipes, setSavedRecipes] = useState([]);
 
   useEffect(() => {
     setRecipes(recipesData);
     setDisplayedRecipes(recipesData);
+    const likesInit = recipesData.reduce((acc, r) => {
+      acc[r.id] = false;
+      return acc;
+    }, {});
+    setLikes(likesInit);
+    const saved = JSON.parse(localStorage.getItem("savedRecipes")) || []; //added
+    setSavedRecipes(saved);
   }, []);
 
   const handleSubmit = (e) => {
@@ -37,153 +45,55 @@ const RecipeCard = () => {
     );
     setDisplayedRecipes(filtered);
   };
-  //  save recepie to local storage
-  const handleSave = (recipe) => {
-    //added
-    const updated = [...savedRecipes, recipe]; //added
-    setSavedRecipes(updated); // added
-    localStorage.setItem("savedRecipes", JSON.stringify(updated)); //added
-    window.dispatchEvent(new Event("savedRecipesUpdated")); // added
-  }; // added
 
-  function shareToWhatsapp(dishName, link) {
-    const text = `${dishName} - Check out this recipe: ${link}`;
-    const encodedText = encodeURIComponent(text); // Encode text for URL
-    const url = `https://wa.me/?text=${encodedText}`;
-    window.open(url, "_blank"); // Opens in a new tab
-  }
+  const handleDropdownChange = (value) => {
+    setSearchText(value);
+
+    if (!value) {
+      // Show all recipes when "All" is selected
+      setDisplayedRecipes(recipesData);
+    } else {
+      // Filter recipes based on selected tag
+      const filtered = recipesData.filter((r) =>
+        r.tags.some((tag) => tag.toLowerCase() === value.toLowerCase())
+      );
+      setDisplayedRecipes(filtered);
+    }
+  };
+
+  const handleSearchInput = () => {
+    if (!searchInput.trim()) {
+      setDisplayedRecipes(recipes); // show all if input empty
+      return;
+    }
+    const filtered = recipesData.filter((r) =>
+      r.dishName.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setDisplayedRecipes(filtered);
+  };
 
   return (
     <div className="align-items-center justify-content-around d-flex flex-column">
-      <div className="container-fluid p-0 border border-warning rounded-bottom ">
-        <div
-          id="heroCarousel"
-          className="carousel slide"
-          data-bs-ride="carousel"
-        >
-          <div className="carousel-inner">
-            {/* Slide 1 */}
-            <div className="carousel-item active m-0 p-0">
-              <div
-                style={{
-                  backgroundImage: `linear-gradient(rgba(50, 50, 50, 0.6), rgba(50, 50, 50, 0.6)), url(${Banner1})`,
-                  height: "400px",
-                  width: "100%",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div className="d-flex flex-column justify-content-center align-items-center text-center h-100">
-                  <h1 className="fs-1 fw-bold text-white">
-                    Warm Recipes for Rainy Days
-                  </h1>
-                  <p className="text-white">
-                    Browse & share your favorite monsoon treats
-                  </p>
-                  {/* <button className="btn btn-light btn-lg mt-2">
-                    Explore Recipes
-                  </button> */}
-                </div>
-              </div>
-            </div>
-
-            {/* Slide 2 */}
-            <div className="carousel-item">
-              <div
-                style={{
-                  backgroundImage: `linear-gradient(rgba(50, 50, 50, 0.6), rgba(50, 50, 50, 0.6)), url(${Chai})`,
-                  height: "400px",
-                  width: "100%",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div className="d-flex flex-column justify-content-center align-items-center text-center h-100">
-                  <h1 className="fs-1 fw-bold text-white">
-                    Hot Soups & Snacks
-                  </h1>
-                  <p className="text-white">
-                    Perfect comfort food for monsoon season
-                  </p>
-                  {/* <button className="btn btn-light btn-lg mt-2">Try Now</button> */}
-                </div>
-              </div>
-            </div>
-
-            {/* Slide 3 */}
-            <div className="carousel-item">
-              <div
-                style={{
-                  backgroundImage: `linear-gradient(rgba(50, 50, 50, 0.6), rgba(50, 50, 50, 0.6)), url(${Banner3})`,
-                  height: "400px",
-                  width: "100%",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div className="d-flex flex-column justify-content-center align-items-center text-center h-100">
-                  <h1 className="fs-1 fw-bold text-white">Seasonal Treats</h1>
-                  <p className="text-white">
-                    Enjoy flavors of the rainy season
-                  </p>
-                  {/* <button className="btn btn-light btn-lg mt-2">
-                    Get Recipes
-                  </button> */}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Carousel controls */}
-          <button
-            className="carousel-control-prev"
-            type="button"
-            data-bs-target="#heroCarousel"
-            data-bs-slide="prev"
-          >
-            <span
-              className="carousel-control-prev-icon"
-              aria-hidden="true"
-            ></span>
-            <span className="visually-hidden">Previous</span>
-          </button>
-
-          <button
-            className="carousel-control-next"
-            type="button"
-            data-bs-target="#heroCarousel"
-            data-bs-slide="next"
-          >
-            <span
-              className="carousel-control-next-icon"
-              aria-hidden="true"
-            ></span>
-            <span className="visually-hidden">Next</span>
-          </button>
-        </div>
-      </div>
-
+      <Carousel />
       <form className="w-100 mt-5" onSubmit={handleSubmit}>
         <div className="d-flex justify-content-between align-items-center w-100  mb-3 flex-wrap mx-5">
-          <div>
-            <div
-              className="d-flex align-items-center justify-content-between border"
-              style={{ width: "230px" }}
+          <div
+            className="d-flex align-items-center justify-content-between border"
+            style={{ width: "230px" }}
+          >
+            <h5 className="mt-2">Filter by Tag</h5>
+            <select
+              className="form-select border border-bg-warning fs-5 "
+              style={{ width: "150px" }}
+              value={searchText}
+              onChange={(e) => handleDropdownChange(e.target.value)}
             >
-              <h5 className="mt-2">Filter by Tag</h5>
-              <select
-                className="form-select border border-bg-warning fs-5 "
-                style={{ maxWidth: "100px" }}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="Beverage">Beverages</option>
-                <option value="Spicy">Spicy</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Healthy">Healthy</option>
-              </select>
-            </div>
+              <option value="">All</option>
+              <option value="Beverage">Beverages</option>
+              <option value="Spicy">Spicy</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Healthy">Healthy</option>
+            </select>
           </div>
 
           {/* Search + Button */}
@@ -195,12 +105,20 @@ const RecipeCard = () => {
               type="text"
               placeholder="Search by dish name"
               className="form-control border border-warning rounded-5 text-center w-50"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value.toLowerCase())}
+              value={searchInput}
+              // onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => {
+                let val = e.target.value;
+                setSearchInput(val);
+                if (val === "") {
+                  setDisplayedRecipes(recipes);
+                }
+              }}
             />
             <button
-              type="submit"
+              type="button"
               className="btn btn-primary bg-warning border-0 rounded-5 fs-4 fw-semibold "
+              onClick={handleSearchInput}
             >
               Search
             </button>
@@ -257,13 +175,9 @@ const RecipeCard = () => {
             <div className="modal-content p-3">
               <button
                 className="btn-close ms-auto"
-                onClick={() => setSelectedRecipe(null)} // ✅ close modal
+                onClick={() => setSelectedRecipe(null)}
               ></button>
-              <Modal
-                recipe={selectedRecipe}
-                handleSave={handleSave}
-                shareToWhatsapp={shareToWhatsapp}
-              />
+              <Modal recipe={selectedRecipe} likes={likes} />
             </div>
           </div>
         </div>
