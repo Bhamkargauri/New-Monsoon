@@ -1,6 +1,7 @@
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function AddRecipeForm() {
   const [dishName, setDishName] = useState("");
@@ -10,9 +11,17 @@ export default function AddRecipeForm() {
   const [tags, setTags] = useState([]);
   const [image, setImage] = useState("");
   const [recipes, setRecipes] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [link, setLink] = useState("");
 
   const apiUrl = "https://6880ec34f1dcae717b63fc74.mockapi.io/MyRecipies";
+
+  const notifySuccess = () => toast.success("Recipe added successfully!");
+
+  const notifyError = () => toast.error("Failed to add Recipe!");
+
+  const notifyWarning = () =>
+    toast.warning("Please select a valid image file.");
 
   const fetchRecipes = async () => {
     try {
@@ -26,18 +35,32 @@ export default function AddRecipeForm() {
     fetchRecipes();
   }, []);
 
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
   const handleImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      // setSelectedFile(file);
+      if (!allowedTypes.includes(file.type)) {
+        notifyWarning("Only JPG, PNG, or WebP images are allowed.");
+        return;
+      }
+
       const options = {
         maxSizeMB: 1,
         maxWidthOrHeight: 800,
         useWebWorker: true,
       };
-      const compressedFile = await imageCompression(file, options);
-      const reader = new FileReader();
-      reader.onload = (e) => setImage(e.target.result);
-      reader.readAsDataURL(compressedFile);
+      try {
+        const compressedFile = await imageCompression(file, options);
+        setSelectedFile(compressedFile);
+        const reader = new FileReader();
+        reader.onload = (e) => setImage(e.target.result);
+        reader.readAsDataURL(compressedFile);
+      } catch (err) {
+        console.error("Image compression failed:", err);
+        notifyWarning("Failed to process image.");
+      }
     }
   };
 
@@ -69,13 +92,46 @@ export default function AddRecipeForm() {
       setTags([]);
       setImage("");
       setLink("");
-
-      alert("Recipe added successfully!");
+      notifySuccess();
     } catch (err) {
       console.error(err);
-      alert("Failed to add recipe!");
+      notifyError();
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData();
+  //   formData.append("dishName", dishName);
+  //   formData.append(
+  //     "Ingredients",
+  //     ingredients.split(",").map((i) => i.trim())
+  //   );
+  //   formData.append("description", description);
+  //   formData.append("Steps", steps);
+  //   formData.append("tags", tags);
+  //   formData.append("image", selectedFile); // original File object, not base64
+  //   formData.append("link", link);
+  //   try {
+  //     await axios.post(apiUrl, formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     fetchRecipes();
+  //     setDishName("");
+  //     setIngredients("");
+  //     setDescription("");
+  //     setSteps("");
+  //     setTags([]);
+  //     setImage("");
+  //     setLink("");
+  //     notifySuccess();
+  //   } catch (err) {
+  //     console.error(err);
+  //     notifyError();
+  //   }
+  // };
 
   return (
     <div className="w-50 mx-auto p-3">
@@ -126,13 +182,17 @@ export default function AddRecipeForm() {
         </select>
         <input
           type="file"
+          accept=".jpg,.jpeg,.png,.webp"
           className="form-control mb-2"
           onChange={handleImageChange}
         />
+        <small className="text-muted">
+          Allowed file types: JPG, PNG, WebP.
+        </small>
 
         <input
           type="url"
-          className="form-control"
+          className="form-control mt-2"
           id="recipeLink"
           placeholder="Enter recipe URL"
           value={link}

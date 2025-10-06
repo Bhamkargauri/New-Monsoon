@@ -11,7 +11,7 @@ const MyRecipes = () => {
   const apiUrl = "https://6880ec34f1dcae717b63fc74.mockapi.io/MyRecipies";
 
   const notifyRemove = () => toast.success("Recipe Removed");
-
+  const notifyDelete = () => toast.success("Recipe Deleted Successfully");
   // Load recipes from localStorage
   const loadRecipes = () => {
     const saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
@@ -43,6 +43,7 @@ const MyRecipes = () => {
     if (window.confirm("want to delete this recipe?")) {
       try {
         await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+        notifyDelete();
         fetchUploadedRecipes(); // refresh after delete
       } catch (err) {
         console.error("Error deleting recipe:", err);
