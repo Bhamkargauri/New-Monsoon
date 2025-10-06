@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Modal = ({ recipe }) => {
   const [likes, setLikes] = useState({});
@@ -26,19 +27,26 @@ const Modal = ({ recipe }) => {
     );
   }, [recipe]);
 
+  const notifySave = () => toast.success("Recipe Saved! in My Recipes");
+
+  const notifyExist = () => toast.warning("Recipe Already Saved");
+
   const handleSave = (r) => {
     if (!r) {
       return;
     }
     setSavedRecipes((prev) => {
-      alert("Recipe Save in My Recipes");
-      if (prev.some((item) => item.id === r.id)) return prev;
+      if (prev.some((item) => item.id === r.id)) {
+        notifyExist();
+        return prev;
+      }
       const next = [...prev, r];
       try {
         localStorage.setItem("savedRecipes", JSON.stringify(next));
       } catch {}
       // notify other parts of app if needed
       window.dispatchEvent(new Event("savedRecipesUpdated"));
+      notifySave();
       return next;
     });
   };

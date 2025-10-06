@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import Modal from "./Modal";
 
 const MyRecipes = () => {
@@ -9,6 +10,8 @@ const MyRecipes = () => {
   // API for uploaded recipes
   const apiUrl = "https://6880ec34f1dcae717b63fc74.mockapi.io/MyRecipies";
 
+  const notifyRemove = () => toast.success("Recipe Removed");
+
   // Load recipes from localStorage
   const loadRecipes = () => {
     const saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
@@ -17,12 +20,11 @@ const MyRecipes = () => {
 
   // Remove recipe from saved (localStorage)
   const handleRemove = (id) => {
-    if (window.confirm("want to remove this recipe?")) {
-      const updated = savedRecipes.filter((r) => r.id !== id);
-      setSavedRecipes(updated);
-      localStorage.setItem("savedRecipes", JSON.stringify(updated));
-      window.dispatchEvent(new Event("savedRecipesUpdated"));
-    }
+    notifyRemove();
+    const updated = savedRecipes.filter((r) => r.id !== id);
+    setSavedRecipes(updated);
+    localStorage.setItem("savedRecipes", JSON.stringify(updated));
+    window.dispatchEvent(new Event("savedRecipesUpdated"));
   };
 
   // Fetch uploaded recipes from API
