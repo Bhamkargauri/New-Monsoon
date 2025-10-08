@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import formbg from "../assets/bg.png";
 
 export default function AddRecipeForm() {
   const [dishName, setDishName] = useState("");
@@ -86,80 +87,126 @@ export default function AddRecipeForm() {
   };
 
   return (
-    <div className="w-50 mx-auto p-3">
-      <h2 className="text-center mb-3 fw-bold">Upload Recipe📜</h2>
-      <form onSubmit={handleSubmit} className="p-3">
-        <input
-          type="text"
-          placeholder="Recipe Title"
-          value={dishName}
-          onChange={(e) => setDishName(e.target.value)}
-          required
-          className="form-control mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Ingredients (comma separated)"
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
-          required
-          className="form-control mb-2"
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          className="form-control mb-2"
-        />
-        <textarea
-          placeholder="Steps"
-          value={steps}
-          onChange={(e) => setSteps(e.target.value)}
-          required
-          className="form-control mb-2"
-        />
-        <label className="form-label">Select tag for your Recipe</label>
-        <select
-          id="selecttag"
-          multiple
-          value={tags}
-          onChange={handleTagChange}
-          className="form-select mb-2"
-        >
-          <option>Spicy</option>
-          <option>Beverages</option>
-          <option>Snacks</option>
-          <option>Healthy</option>
-        </select>
+    <div
+      className="min-vh-100 d-flex align-items-center justify-content-end"
+      style={{
+        backgroundImage: `url(${formbg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div className="d-flex justify-content-end pe-5 w-100">
+        <div className="col-lg-6 col-md-8 col-sm-10 bg-warning bg-opacity-50 rounded-5 shadow p-4">
+          <h2 className="text-center mb-4 fw-bold text-dark">Upload Recipe</h2>
 
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp"
-          className="form-control mb-2"
-          onChange={handleImageChange}
-        />
-        <small className="text-muted">
-          Allowed file types: JPG, PNG, WebP. Max size: 1MB.
-        </small>
+          <form onSubmit={handleSubmit}>
+            <div className="row mb-3">
+              <div className="col-md-6 mb-3 mb-md-0">
+                <input
+                  type="text"
+                  placeholder="Recipe Title"
+                  value={dishName}
+                  onChange={(e) => setDishName(e.target.value)}
+                  required
+                  className="form-control bg-transparent border-secondary"
+                />
+              </div>
+              <div className="col-md-6">
+                <input
+                  type="text"
+                  placeholder="Ingredients (comma separated)"
+                  value={ingredients}
+                  onChange={(e) => setIngredients(e.target.value)}
+                  required
+                  className="form-control bg-transparent border-secondary"
+                />
+              </div>
+            </div>
 
-        <input
-          type="url"
-          className="form-control mt-2"
-          id="recipeLink"
-          placeholder="Enter recipe URL"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-        />
-        <div className="d-flex justify-content-center mt-3">
-          <button
-            className="btn btn-primary w-full border-0 rounded-5 fw-semibold fs-5"
-            type="submit"
-          >
-            Submit Recipe
-          </button>
+            <div className="row mb-3">
+              <div className="col-md-6 mb-3 mb-md-0">
+                <textarea
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                  className="form-control bg-transparent border-secondary"
+                  rows="3"
+                />
+              </div>
+              <div className="col-md-6">
+                <textarea
+                  placeholder="Steps"
+                  value={steps}
+                  onChange={(e) => setSteps(e.target.value)}
+                  required
+                  className="form-control bg-transparent border-secondary"
+                  rows="3"
+                />
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-6 mb-3 mb-md-0">
+                <label className="form-label fw-semibold">
+                  Select tag for your Recipe
+                </label>
+                <select
+                  id="selecttag"
+                  multiple
+                  value={tags}
+                  onChange={handleTagChange}
+                  className="form-select bg-transparent border-secondary"
+                >
+                  <option value="Spicy">Spicy</option>
+                  <option value="Beverages">Beverages</option>
+                  <option value="Snacks">Snacks</option>
+                  <option value="Healthy">Healthy</option>
+                </select>
+                <small className="text-muted">
+                  (Hold Ctrl to select multiple)
+                </small>
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">Upload Image</label>
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp"
+                  className="form-control bg-transparent border-secondary"
+                  onChange={handleImageChange}
+                />
+                <small className="text-muted">
+                  Allowed: JPG, PNG, WebP (Max 1MB)
+                </small>
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-12">
+                <input
+                  type="url"
+                  className="form-control bg-transparent border-secondary"
+                  id="recipeLink"
+                  placeholder="Enter recipe URL"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="text-center mt-3">
+              <button
+                className="btn btn-warning w-100 fw-semibold rounded-5 fs-5 border-0"
+                type="submit"
+              >
+                Submit Recipe
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
